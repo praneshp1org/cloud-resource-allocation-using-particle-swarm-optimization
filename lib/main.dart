@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:pso/utils/best_allocation_table.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 void main() {
   runApp(MyApp());
@@ -35,6 +36,7 @@ class _PSOSimulationState extends State<PSOSimulation> {
   List<double>? gBest;
   double gBestFitness = double.maxFinite;
   bool isRunning = false;
+  List<double> fitnessProgress = [];
 
   @override
   void initState() {
@@ -52,10 +54,10 @@ class _PSOSimulationState extends State<PSOSimulation> {
       tasks =
           (jsonResult['tasks'] as List).map((t) => Task.fromJson(t)).toList();
 
-      print('Resources loaded: ${resources!.length}');
-      print('Tasks loaded: ${tasks!.length}');
-
-      initializePSO();
+      // Notify Flutter that the data has been loaded and the widget needs to rebuild
+      setState(() {
+        initializePSO();
+      });
     } catch (e) {
       print('Error loading JSON data: $e');
     }
@@ -73,6 +75,7 @@ class _PSOSimulationState extends State<PSOSimulation> {
   void runPSO() async {
     setState(() {
       isRunning = true;
+      fitnessProgress.clear(); // Clear previous progress
     });
 
     if (swarm == null) return;
@@ -91,6 +94,9 @@ class _PSOSimulationState extends State<PSOSimulation> {
           gBestFitness = particle.fitness;
         }
       }
+
+      // Track fitness progress
+      fitnessProgress.add(gBestFitness);
 
       for (var particle in swarm!) {
         for (int d = 0; d < particle.allocation.length; d++) {
@@ -177,24 +183,19 @@ class _PSOSimulationState extends State<PSOSimulation> {
                               ),
                               Text(gBest!.toStringAsFixed(2)),
                               SizedBox(height: 20),
-                              if (gBest != null)
-                                // BestAllocationTable(
-                                //   gBest: gBest,
-                                //   gBestFitness: gBestFitness,
-                                // ),
-                                if (gBest != null)
-                                  BestAllocationTable(
-                                    gBest: gBest,
-                                    gBestFitness: gBestFitness,
-                                    tasks: tasks!,
-                                  ),
-                              SizedBox(height: 10),
-                              // Text(
-                              //   'Best Fitness:',
-                              //   style: TextStyle(
-                              //       fontSize: 18, fontWeight: FontWeight.bold),
-                              // ),
-                              // Text(gBestFitness.toStringAsFixed(2)),
+                              BestAllocationTable(
+                                gBest: gBest,
+                                gBestFitness: gBestFitness,
+                                tasks: tasks!,
+                              ),
+                              SizedBox(height: 20),
+                              // Fitness Chart
+                              Text(
+                                'Fitness Progress:',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              FitnessChart(fitnessValues: fitnessProgress),
                             ],
                           ),
                       ],
@@ -265,5 +266,40 @@ class Task {
 extension DoubleListExtension on List<double> {
   String toStringAsFixed(int fractionDigits) {
     return map((e) => e.toStringAsFixed(fractionDigits)).join(', ');
+  }
+}
+
+// import 'package:fl_chart/fl_chart.dart';
+
+class FitnessChart extends StatelessWidget {
+  final List<double> fitnessValues;
+
+  FitnessChart({required this.fitnessValues});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 200,
+      child: LineChart(
+        LineChartData(
+          titlesData: FlTitlesData(show: true),
+          borderData: FlBorderData(show: true),
+          lineBarsData: [
+            LineChartBarData(
+              spots: fitnessValues.asMap().entries.map((entry) {
+                int index = entry.key;
+                double value = entry.value;
+                return FlSpot(index.toDouble(), value);
+              }).toList(),
+              isCurved: true,
+              // colors: [Colors.blue],
+              color: Colors.blue,
+              dotData: FlDotData(show: true),
+              belowBarData: BarAreaData(show: false),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
