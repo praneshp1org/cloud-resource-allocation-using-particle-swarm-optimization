@@ -9,8 +9,7 @@
       {"id": 2, "cpu": 10, "memory": 25, "bandwidth": 35},
       {"id": 3, "cpu": 20, "memory": 30, "bandwidth": 40},
       {"id": 4, "cpu": 25, "memory": 35, "bandwidth": 45},
-      {"id": 5, "cpu": 30, "memory": 40, "bandwidth": 50},
-      {"id": 6, "cpu": 10, "memory": 20, "bandwidth": 30}
+      {"id": 5, "cpu": 50, "memory": 100, "bandwidth": 150}
     ]
   }
   

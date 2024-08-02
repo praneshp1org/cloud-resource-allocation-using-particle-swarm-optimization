@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:pso/utils/best_allocation_table.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:pso/utils/resource_analysis.dart';
 
 void main() {
   runApp(MyApp());
@@ -33,7 +34,7 @@ class _PSOSimulationState extends State<PSOSimulation> {
   List<Resource>? resources;
   List<Task>? tasks;
   List<Particle>? swarm;
-  List<double>? gBest;
+  List<double> gBest = [];
   double gBestFitness = double.maxFinite;
   bool isRunning = false;
   List<double> fitnessProgress = [];
@@ -187,6 +188,17 @@ class _PSOSimulationState extends State<PSOSimulation> {
                                 gBest: gBest,
                                 gBestFitness: gBestFitness,
                                 tasks: tasks!,
+                                // resources: [],
+                              ),
+                              // Resource Analysis
+                              SizedBox(
+                                height: 20,
+                              ),
+                              ResourceAnalysis(
+                                resources: resources!,
+                                tasks: tasks!,
+                                // allocation: gBest!,
+                                gBest: gBest!,
                               ),
                               SizedBox(height: 20),
                               // Fitness Chart
