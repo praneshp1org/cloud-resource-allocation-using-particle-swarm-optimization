@@ -96,4 +96,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 
 ## Demo
-![Demo](/assets/Screenshot%202024-07-31%20at%2012.31.59.png)
+![Demo](/assets/Screenshot%202024-08-05%20at%2022.23.55.png)

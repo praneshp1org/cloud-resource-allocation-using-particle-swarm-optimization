@@ -117,10 +117,10 @@ class BestAllocationTable extends StatelessWidget {
           ],
         ),
         SizedBox(height: 10),
-        Text(
-          'Best Fitness: ${gBestFitness.toStringAsFixed(2)}',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
+        // Text(
+        //   'Best Fitness: ${gBestFitness.toStringAsFixed(2)}',
+        //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        // ),
       ],
     );
   }
