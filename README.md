@@ -96,4 +96,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 
 ## Demo
+### iOS
 ![Demo](/assets/Screenshot%202024-08-05%20at%2022.23.55.png)
+
+### Web
+![Demo Web](/assets/Screenshot%202024-08-05%20at%2022.26.04.png)
