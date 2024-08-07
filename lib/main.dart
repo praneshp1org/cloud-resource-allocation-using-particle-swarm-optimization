@@ -39,6 +39,8 @@ class _PSOSimulationState extends State<PSOSimulation> {
   List<double> fitnessProgress = [];
   double mse = 0.0;
   double mae = 0.0;
+  final stopwatch = Stopwatch()..start();
+  bool stopWatchStart = false;
 
   @override
   void initState() {
@@ -78,9 +80,9 @@ class _PSOSimulationState extends State<PSOSimulation> {
 
     List<Task> generatedTasks = [];
     for (int i = 0; i < numTasks; i++) {
-      double cpu = random.nextDouble() * 10 + 10;
-      double memory = random.nextDouble() * 10 + 10;
-      double bandwidth = random.nextDouble() * 10 + 10;
+      double cpu = random.nextDouble() * 10 + 5;
+      double memory = random.nextDouble() * 10 + 5;
+      double bandwidth = random.nextDouble() * 10 + 5;
 
       totalCpu += cpu;
       totalMemory += memory;
@@ -124,74 +126,6 @@ class _PSOSimulationState extends State<PSOSimulation> {
     });
   }
 
-  // void generateRandomData() {
-  //   final random = Random();
-  //   final double maxResourceCapacity = 100.0;
-  //   final int numTasks = 5;
-  //   final double spikeChance = 0.1;
-
-  //   resources = [
-  //     Resource(name: 'CPU', capacity: maxResourceCapacity),
-  //     Resource(name: 'Memory', capacity: maxResourceCapacity),
-  //     Resource(name: 'Bandwidth', capacity: maxResourceCapacity),
-  //   ];
-
-  //   double totalTaskCpu = 0;
-  //   double totalTaskMemory = 0;
-  //   double totalTaskBandwidth = 0;
-
-  //   List<Task> generatedTasks = [];
-  //   for (int i = 0; i < numTasks; i++) {
-  //     double cpu = random.nextDouble() * 10 + 10;
-  //     double memory = random.nextDouble() * 10 + 10;
-  //     double bandwidth = random.nextDouble() * 10 + 10;
-
-  //     totalTaskCpu += cpu;
-  //     totalTaskMemory += memory;
-  //     totalTaskBandwidth += bandwidth;
-
-  //     generatedTasks.add(Task(
-  //       id: i + 1,
-  //       cpu: cpu,
-  //       memory: memory,
-  //       bandwidth: bandwidth,
-  //     ));
-  //   }
-
-  //   final double totalResourceCapacity =
-  //       resources!.fold(0, (sum, resource) => sum + resource.capacity);
-
-  //   if (random.nextDouble() < spikeChance) {
-  //     double capacityFactor = totalResourceCapacity /
-  //         max(totalTaskCpu, max(totalTaskMemory, totalTaskBandwidth));
-  //     if (capacityFactor < 1.0) {
-  //       generatedTasks = generatedTasks.map((task) {
-  //         return Task(
-  //           id: task.id,
-  //           cpu: task.cpu * 1.5,
-  //           memory: task.memory * 1.5,
-  //           bandwidth: task.bandwidth * 1.5,
-  //         );
-  //       }).toList();
-  //     }
-  //   }
-
-  //   generatedTasks = generatedTasks.map((task) {
-  //     return Task(
-  //       id: task.id,
-  //       cpu: min(task.cpu, maxResourceCapacity),
-  //       memory: min(task.memory, maxResourceCapacity),
-  //       bandwidth: min(task.bandwidth, maxResourceCapacity),
-  //     );
-  //   }).toList();
-
-  //   tasks = generatedTasks;
-
-  //   setState(() {
-  //     initializePSO();
-  //   });
-  // }
-
   void initializePSO() {
     if (tasks == null || resources == null) {
       print('Tasks or resources are null');
@@ -218,7 +152,15 @@ class _PSOSimulationState extends State<PSOSimulation> {
       return;
     }
 
-    final stopwatch = Stopwatch()..start();
+    // final stopwatch = Stopwatch()..start();
+    if (stopWatchStart) {
+      stopwatch..start();
+      // stopWatchStart = ?
+      // stopwatch=?
+    } else {
+      stopWatchStart = !stopWatchStart;
+      stopwatch.reset();
+    }
 
     await pso!.run(tasks!, (metrics) {
       setState(() {
@@ -226,8 +168,8 @@ class _PSOSimulationState extends State<PSOSimulation> {
         mse = metrics['mse']!;
         mae = metrics['mae']!;
       });
-      print(
-          'Current metrics: MSE = ${metrics['mse']}, MAE = ${metrics['mae']}');
+      // print(
+      //     'Current metrics: MSE = ${metrics['mse']}, MAE = ${metrics['mae']}');
     });
 
     stopwatch.stop();
@@ -253,6 +195,7 @@ class _PSOSimulationState extends State<PSOSimulation> {
             onPressed: () {
               setState(() {
                 generateRandomData();
+                stopwatch.reset();
               });
             },
             icon: Icon(Icons.refresh),
@@ -370,6 +313,8 @@ class _PSOSimulationState extends State<PSOSimulation> {
                               ),
                               Text('MSE: ${mse.toStringAsFixed(10)}'),
                               Text('MAE: ${mae.toStringAsFixed(10)}'),
+                              Text(
+                                  'Time Elapsed: ${stopwatch.elapsedMilliseconds} ms')
                             ],
                           ),
                       ],
